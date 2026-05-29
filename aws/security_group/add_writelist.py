@@ -9,6 +9,8 @@ from botocore.exceptions import ClientError
 import json
 import pandas as pd
 import io
+import sys
+
 
 log = Logger()
 
@@ -301,5 +303,9 @@ def sync_security_group_with_status(aws_secret_name):
 
 
 if __name__ == "__main__":
-    aws_secret_name = "vego-garden/devops/secuirty_group/skucast/production"
+    args= sys.argv
+    if len(sys.argv) >1:
+        aws_secret_name=sys.argv[1]
+    else:
+        aws_secret_name = "vego-garden/devops/secuirty_group/skucast/production"
     sync_security_group_with_status(aws_secret_name)
