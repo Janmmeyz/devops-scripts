@@ -11,7 +11,6 @@ import pandas as pd
 import io
 import sys
 
-
 log = Logger()
 
 
@@ -142,7 +141,7 @@ def read_google_drive_excel(service_account_info, file_id):
 
 
 def sync_security_group_with_status(aws_secret_name):
-    ec2 = boto3.client("ec2")
+    ec2 = boto3.client("ec2", region_name="us-east-1")
     aws_secret_json = get_secret(aws_secret_name, region_name="us-east-1")
     google_service_account_info = aws_secret_json.get("google_service_account_info")
     google_drive_file_id = aws_secret_json.get("google_drive_file_id")
@@ -180,15 +179,18 @@ def sync_security_group_with_status(aws_secret_name):
 
     for _, row in sg_df.iterrows():
         # excel_desc = str(row["description"])
-        excel_cidr = f"{str(row["cidr"]).strip()}/32" if "/" not in str(row["cidr"]).strip() else str(row["cidr"]).strip()
+        if '/' in str(row['cidr']).strip():
+            excel_cidr =  str(row['cidr']).strip()
+        else:
+            excel_cidr = f"{str(row['cidr']).strip()}/32"
         excel_from_port = int(row["from_port"])
         excel_to_port = int(row["to_port"])
         excel_protocol = str(row["protocol"]).strip().lower()
         excel_status = str(row["status"]).strip().lower()
         if excel_from_port == excel_to_port:
-            excel_desc = f"{str(row["description"])}_{str(row["from_port"])}"
+            excel_desc = f"{str(row['description'])}_{str(row['from_port'])}"
         else:
-            excel_desc = f"{str(row["description"])}_{str(row["from_port"])} To {str(row["to_port"])}"
+            excel_desc = f"{str(row['description'])}_{str(row['from_port'])} To {str(row['to_port'])}"
         if not excel_desc.startswith(desc_prefix):
             excel_desc = f"{desc_prefix}{excel_desc}"
 
@@ -216,7 +218,9 @@ def sync_security_group_with_status(aws_secret_name):
                             }
                         ],
                     )
-                    log.info(f"成功删除 IP: {cloud_item['cidr']}, Description: {excel_desc}")
+                    log.info(
+                        f"成功删除 IP: {cloud_item['cidr']}, Description: {excel_desc}"
+                    )
                 except Exception as e:
                     log.error(f"删除失败: {e}")
             else:
@@ -303,9 +307,9 @@ def sync_security_group_with_status(aws_secret_name):
 
 
 if __name__ == "__main__":
-    args= sys.argv
-    if len(sys.argv) >1:
-        aws_secret_name=sys.argv[1]
+    args = sys.argv
+    if len(sys.argv) > 1:
+        aws_secret_name = sys.argv[1]
     else:
         aws_secret_name = "vego-garden/devops/secuirty_group/skucast/production"
     sync_security_group_with_status(aws_secret_name)
