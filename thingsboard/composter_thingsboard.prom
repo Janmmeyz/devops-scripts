@@ -1,0 +1,1 @@
+get_token_status_thingsboard{app_vego="thingsboard-composter-prd",env="prd"} 1
