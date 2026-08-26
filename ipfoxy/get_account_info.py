@@ -64,8 +64,8 @@ def send_feishu_notify(feishu_webhook, content: str):
 
 
 def get_ipfoxy_main_plan():
-    TRAFFIC_ALERT_THRESHOLD_GB = 1.0
-    EXPIRE_ALERT_DAY = 1
+    TRAFFIC_ALERT_THRESHOLD_GB = 0.5
+    EXPIRE_ALERT_DAY = 2
     
     secret = get_secret(
         "vego-garden/devops-alert/ipfoxy/production", region_name="us-east-1"
@@ -119,7 +119,7 @@ def get_ipfoxy_main_plan():
             log.info(f"msg: {msg}")
             send_feishu_notify(feishu_webhook=feishu_webhook_url,content=msg)
         else:
-            log.info("一切正常，无需告警")
+            log.info(f"一切正常，无需告警\n告警阈值:\n剩余流量: {TRAFFIC_ALERT_THRESHOLD_GB}GB\n剩余天数: {EXPIRE_ALERT_DAY}天")
 
     except Exception as err:
         err_msg = f"脚本执行异常:{str(err)}"
