@@ -65,7 +65,7 @@ def send_feishu_notify(feishu_webhook, content: str):
 
 def get_ipfoxy_main_plan():
     TRAFFIC_ALERT_THRESHOLD_GB = 0.5
-    EXPIRE_ALERT_DAY = 2
+    EXPIRE_ALERT_DAY = 1
     
     secret = get_secret(
         "vego-garden/devops-alert/ipfoxy/production", region_name="us-east-1"
