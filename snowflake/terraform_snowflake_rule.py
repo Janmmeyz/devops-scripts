@@ -416,5 +416,5 @@ if __name__ == "__main__":
 
     # rules = gen.read_google_sheet()
     # gen.prepare_tf_dir(rules)
-    gen.terraform_plan()
-    # gen.terraform_apply()
+    # gen.terraform_plan()
+    gen.terraform_apply()
